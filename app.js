@@ -115,7 +115,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/books', bookRoutes);
 app.use('/admin', userRoutes);
-app.use('/', indexRoutes); 
+// app.use('/', indexRoutes); 
 
 // الصفحة الرئيسية للموقع (المكتبة العامة للجميع)
 app.get('/', bookController.getPublicBooks);
