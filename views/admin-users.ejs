@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الحسابات - لوحة تحكم عصرية</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --accent-color: #27ae60;
+            --danger-color: #e74c3c;
+            --bg-color: #f0f2f5;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; color: #333; }
+        
+        /* الهيدر */
+        header { background: linear-gradient(135deg, var(--secondary-color), #34495e); color: white; padding: 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        nav a { color: #fff !important; text-decoration: none; font-weight: bold; padding: 8px 16px; border-radius: 8px; transition: 0.3s; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+
+        /* البطاقات والنموذج */
+        .admin-card { background: #fff; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-mini { padding: 12px; border: 2px solid #eee; border-radius: 8px; transition: 0.3s; }
+        .input-mini:focus { border-color: var(--primary-color); outline: none; }
+        button[type="submit"] { padding: 12px 25px; background-color: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button[type="submit"]:hover { background-color: #219150; transform: translateY(-2px); }
+
+        /* الجدول */
+        .table-container { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        .styled-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .styled-table th { background-color: #f8f9fa; padding: 18px; border-bottom: 3px solid #eee; color: #555; }
+        .styled-table td { padding: 18px; border-bottom: 1px solid #eee; text-align: center; }
+        
+        /* الأزرار التفاعلية */
+        .btn-action { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; transition: 0.3s; }
+        .btn-change { background-color: var(--primary-color); }
+        .btn-delete { background-color: var(--danger-color); text-decoration: none; display: inline-block; }
+        .btn-action:hover { opacity: 0.8; }
+
+        /* تجاوب مع الجوال */
+        @media (max-width: 600px) {
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .admin-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>لوحة التحكم ⚙️</h1>
+    <nav>
+        <a href="/">الرئيسية</a>
+    </nav>
+</header>
+
+<div class="admin-card">
+    <h3 style="margin-top: 0;">إضافة مستخدم جديد</h3>
+    <form id="addUserForm" class="admin-form">
+        <div class="form-group">
+            <label>اسم المستخدم</label>
+            <input type="text" name="username" class="input-mini" required>
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" name="password" class="input-mini" required>
+        </div>
+        <div class="form-group">
+            <label>الدور</label>
+            <select name="role" class="input-mini">
+                <option value="teacher">معلم</option>
+                <option value="admin">مدير</option>
+            </select>
+        </div>
+        <button type="submit">إضافة مستخدم</button>
+    </form>
+    <div id="messageArea" style="margin-top: 15px; font-weight: bold;"></div>
+</div>
+
+<div class="table-container">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>المستخدم</th>
+                <th>الدور</th>
+                <th>تغيير الدور</th>
+                <th>كلمة السر</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => { %>
+            <tr>
+                <td><strong><%= user.username %></strong></td>
+                <td><%= user.role %></td>
+                <td>
+                    <form action="/admin/users/update-role/<%= user.id %>" method="POST">
+                        <select name="role" onchange="this.form.submit()" class="input-mini">
+                            <option value="teacher" <%= user.role === 'teacher' ? 'selected' : '' %>>معلم</option>
+                            <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>مدير</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <form action="/admin/users/reset-password" method="POST" style="display: flex; gap: 5px; justify-content: center;">
+                        <input type="hidden" name="id" value="<%= user.id %>">
+                        <input type="password" name="newPassword" placeholder="جديدة" class="input-mini" style="width: 100px;" required>
+                        <button type="submit" class="btn-action btn-change">تغيير</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="/admin/users/delete/<%= user.id %>" class="btn-action btn-delete" onclick="return confirm('تأكيد الحذف؟')">حذف</a>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        const response = await fetch('/admin/users/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        const msgDiv = document.getElementById('messageArea');
+        msgDiv.innerText = result.message;
+        msgDiv.style.color = result.success ? 'green' : 'red';
+        if (result.success) location.reload();
+    });
+       document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && ['I','J'].includes(e.key)) || 
+                (e.ctrlKey && ['u','s'].includes(e.key))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+</script>
+
+</body>
+</html>

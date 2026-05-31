@@ -1,0 +1,1101 @@
+<!-- <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة مستودع الكتب 📚</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f5f6fa; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #2980b9; text-decoration: none; font-weight: bold; }
+        .section-box { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; }
+        .section-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* تنسيق النموذج البسيط والمرن */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        .form-group input, .form-group select { padding: 10px; border: 2px solid #dcdde1; border-radius: 6px; outline: none; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { border-color: #27ae60; }
+        .btn-submit { padding: 12px 35px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        .btn-submit:hover { background: #219653; }
+        
+        /* حقل البحث الذكي */
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #2980b9; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        
+        /* الجدول */
+        .books-table { width: 100%; border-collapse: collapse; background: white; }
+        .books-table th { background: #2c3e50; color: white; padding: 12px; text-align: center; }
+        .books-table td { padding: 12px; border-bottom: 1px solid #eeeff1; text-align: center; }
+        .books-table tr:hover { background: #f8f9fa; }
+        
+        /* أوسمة التصنيفات والمستويات */
+        .badge-cat { background: #e1b12c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-level { background: #6c5ce7; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-subject { background: #57606f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/books/admin" class="back-link">← العودة للوحة التحكم الرئيسية</a>
+
+        <div class="section-box">
+            <h2>إضافة كتاب تعليمي جديد لمستودع BTEC ➕</h2>
+            <form action="/books/add" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>عنوان الكتاب/الملف:</label>
+                        <input type="text" name="title" required placeholder="مثال: هندسة البرمجيات المتقدمة">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>القسم (التصنيف):</label>
+                        <select name="category_id" required>
+                            <option value="">اختر القسم...</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>المستوى الفني (Level):</label>
+                        <select name="level" required>
+                            <option value="">اختر المستوى...</option>
+                            <option value="Level 2">المستوى الثاني (L2)</option>
+                            <option value="Level 3">المستوى الثالث (L3)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>رمز/اسم المادة الفنية:</label>
+                        <input type="text" name="subject_id" placeholder="مثال: btec_soft101">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رابط الصورة المباشر (اختياري):</label>
+                        <input type="text" name="image_url" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>رابط ملف الـ PDF للمادة:</label>
+                        <input type="url" name="pdf_url" required placeholder="أدخل رابط الملف من Google Drive">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">حفظ وإضافة الكتاب فوراً 🚀</button>
+            </form>
+        </div>
+
+        <div class="section-box">
+            <h2>قائمة الكتب الحالية في النظام 📚</h2>
+            <input type="text" id="bookSearch" class="search-box" onkeyup="filterBooks()" placeholder="🔍 ابدأ بكتابة اسم الكتاب للبحث الفوري والسريع...">
+            
+            <table class="books-table" id="booksTable">
+                <thead>
+                    <tr>
+                        <th style="text-align: right;">عنوان الكتاب</th>
+                        <th>القسم العلمي</th>
+                        <th>المستوى (Level)</th>
+                        <th>المادة (Subject)</th>
+                        <th>ملف الـ PDF</th>
+                        <th>العمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% books.forEach(book => { %>
+                        <tr>
+                            <td style="font-weight: bold; text-align: right;"><%= book.title %></td>
+                            
+                            <td><span class="badge-cat"><%= book.category_name || 'عام' %></span></td>
+                            
+                            <td>
+                                <% if(book.level) { %>
+                                    <span class="badge-level"><%= book.level %></span>
+                                <% } else { %>
+                                    <span style="color:#aaa; font-size:12px;">غير محدد</span>
+                                <% } %>
+                            </td>
+
+                            <td>
+                                <% if(book.subject_id) { %>
+                                    <span class="badge-subject"><%= book.subject_id %></span>
+                                <% } else { %>
+                                    <span style="color:#aaa; font-size:12px;">-</span>
+                                <% } %>
+                            </td>
+                            
+                            <td><a href="<%= book.pdf_url %>" target="_blank" style="color: #e74c3c; text-decoration: none; font-weight: bold;">📄 عرض الملف</a></td>
+                            
+                            <td>
+                                <a href="/books/delete/<%= book.id %>" onclick="return confirm('هل أنت متأكد من حذف هذا الكتاب نهائياً؟')" style="text-decoration: none; color: #e74c3c; font-size: 15px;">🗑️ حذف</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    // دالة تصفية والبحث في الكتب بسرعة بدون تحميل الصفحة
+    function filterBooks() {
+        let input = document.getElementById('bookSearch').value.toLowerCase();
+        let table = document.getElementById('booksTable');
+        let tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName('td')[0]; // فحص عمود العنوان أولاً
+            if (td) {
+                let textValue = td.textContent || td.innerText;
+                if (textValue.toLowerCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة مستودع الكتب 📚</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+        .main-content { padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #2980b9; text-decoration: none; font-weight: bold; }
+        .section-box { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; }
+        .section-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* تنسيق النموذج البسيط والمرن */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        .form-group input, .form-group select { padding: 10px; border: 2px solid #dcdde1; border-radius: 6px; outline: none; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { border-color: #27ae60; }
+        .btn-submit { padding: 12px 35px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        .btn-submit:hover { background: #219653; }
+        
+        /* حقل البحث الذكي */
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #2980b9; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        
+        /* الجدول */
+        .books-table { width: 100%; border-collapse: collapse; background: white; }
+        .books-table th { background: #2c3e50; color: white; padding: 12px; text-align: center; }
+        .books-table td { padding: 12px; border-bottom: 1px solid #eeeff1; text-align: center; }
+        .books-table tr:hover { background: #f8f9fa; }
+        
+        /* أوسمة التصنيفات والمستويات */
+        .badge-cat { background: #e1b12c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-level { background: #6c5ce7; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-subject { background: #57606f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+        /* تنسيق شاشة عرض الـ PDF المنبثقة (Modal) */
+        .pdf-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { position: relative; background-color: #fff; margin: 2% auto; width: 85%; height: 88%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { padding: 15px 20px; background: #2c3e50; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .close-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+        .close-btn:hover { background: #c0392b; }
+        .pdf-iframe { width: 100%; height: 100%; border: none; }
+
+        /* 🛡️ طبقة حماية شفافة لمنع النقر على زر الفتح الخارجي بجوجل درايف */
+        .block-google-popout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 160px;          /* المساحة التي تغطي أدوات جوجل العلوية اليمنى */
+            height: 55px;          /* الارتفاع المناسب لمنطقة شريط الأدوات */
+            background-color: transparent; /* شفافة بالكامل لحفظ المظهر العام */
+            z-index: 10;           /* تضمن البقاء فوق الإطار لاستقبال الضغطات */
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <div class="main-content">
+        <div class="container">
+            <a href="/books/admin" class="back-link">← العودة للوحة التحكم الرئيسية</a>
+
+            <div class="section-box">
+                <h2>إضافة كتاب تعليمي جديد لمستودع BTEC ➕</h2>
+                <form action="/books/add" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>عنوان الكتاب/الملف:</label>
+                            <input type="text" name="title" required placeholder="مثال: هندسة البرمجيات المتقدمة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>القسم (التصنيف):</label>
+                            <select name="category_id" required>
+                                <option value="">اختر القسم...</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>"><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>المستوى الفني (Level):</label>
+                            <select name="level" required>
+                                <option value="">اختر المستوى...</option>
+                                <option value="Level 2">المستوى الثاني (L2)</option>
+                                <option value="Level 3">المستوى الثالث (L3)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رمز/اسم المادة الفنية:</label>
+                            <input type="text" name="subject_id" placeholder="مثال: btec_soft101">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>رابط الصورة المباشر (اختياري):</label>
+                            <input type="text" name="image_url" placeholder="https://example.com/image.jpg">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>رابط ملف الـ PDF للمادة:</label>
+                            <input type="url" name="pdf_url" required placeholder="أدخل رابط الملف من Google Drive">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">حفظ وإضافة الكتاب فوراً 🚀</button>
+                </form>
+            </div>
+
+            <div class="section-box">
+                <h2>قائمة الكتب الحالية في النظام 📚</h2>
+                <input type="text" id="bookSearch" class="search-box" onkeyup="filterBooks()" placeholder="🔍 ابدأ بكتابة اسم الكتاب للبحث الفوري والسريع...">
+                
+                <table class="books-table" id="booksTable">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">عنوان الكتاب</th>
+                            <th>القسم العلمي</th>
+                            <th>المستوى (Level)</th>
+                            <th>المادة (Subject)</th>
+                            <th>ملف الـ PDF</th>
+                            <th>العمليات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% books.forEach(book => { %>
+                            <tr>
+                                <td style="font-weight: bold; text-align: right;"><%= book.title %></td>
+                                
+                                <td><span class="badge-cat"><%= book.category_name || 'عام' %></span></td>
+                                
+                                <td>
+                                    <% if(book.level) { %>
+                                        <span class="badge-level"><%= book.level %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">غير محدد</span>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <% if(book.subject_id) { %>
+                                        <span class="badge-subject"><%= book.subject_id %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">-</span>
+                                    <% } %>
+                                </td>
+                                
+                                <td>
+                                    <a href="#" onclick="openPdfModal('<%= book.pdf_url %>', '<%= book.title %>'); return false;" style="color: #e74c3c; text-decoration: none; font-weight: bold;">📄 عرض الملف داخلياً</a>
+                                </td>
+                                
+                                <td>
+                                    <a href="/books/delete/<%= book.id %>" onclick="return confirm('هل أنت متأكد من حذف هذا الكتاب نهائياً؟')" style="text-decoration: none; color: #e74c3c; font-size: 15px;">🗑️ حذف</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfViewerModal" class="pdf-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalBookTitle">عرض مستند الكتاب</h3>
+                <button class="close-btn" onclick="closePdfModal()">إغلاق الملف ✖</button>
+            </div>
+            <div style="position: relative; width: 100%; height: 100%; flex-grow: 1;">
+                <div class="block-google-popout"></div>
+                <iframe id="modalIframe" class="pdf-iframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // دالة تصفية والبحث في الكتب بسرعة بدون تحميل الصفحة
+    function filterBooks() {
+        let input = document.getElementById('bookSearch').value.toLowerCase();
+        let table = document.getElementById('booksTable');
+        let tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                let textValue = td.textContent || td.innerText;
+                if (textValue.toLowerCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // وظيفة فتح نافذة الـ PDF المنبثقة
+    function openPdfModal(url, title) {
+        let cleanUrl = url;
+        
+        if (url.includes('drive.google.com') && url.includes('/view')) {
+            cleanUrl = url.replace('/view', '/preview');
+        }
+
+        document.getElementById('modalBookTitle').innerText = "معاينة: " + title;
+        document.getElementById('modalIframe').src = cleanUrl;
+        document.getElementById('pdfViewerModal').style.display = "block";
+        document.body.style.overflow = "hidden"; // منع سكرول الصفحة الخلفية أثناء المعاينة
+    }
+
+    // وظيفة إغلاق نافذة الـ PDF المنبثقة وتفريغ الإطار لتوفير الاستهلاك
+    function closePdfModal() {
+        document.getElementById('pdfViewerModal').style.display = "none";
+        document.getElementById('modalIframe').src = "";
+        document.body.style.overflow = "auto"; // إعادة السكرول الطبيعي للصفحة
+    }
+    </script>
+
+    <%- include('footer') %>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة مستودع الكتب 📚</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+        .main-content { padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #2980b9; text-decoration: none; font-weight: bold; }
+        .section-box { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; }
+        .section-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* تنسيق النموذج البسيط والمرن */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        .form-group input, .form-group select { padding: 10px; border: 2px solid #dcdde1; border-radius: 6px; outline: none; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { border-color: #27ae60; }
+        .btn-submit { padding: 12px 35px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        .btn-submit:hover { background: #219653; }
+        
+        /* زر التعديل والعمليات السريعة */
+        .btn-edit { color: #2980b9; text-decoration: none; font-weight: bold; margin-left: 10px; font-size: 15px; }
+        .btn-edit:hover { text-decoration: underline; }
+        .btn-delete { text-decoration: none; color: #e74c3c; font-size: 15px; font-weight: bold; }
+        .btn-delete:hover { text-decoration: underline; }
+
+        /* حقل البحث الذكي */
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #2980b9; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        
+        /* الجدول */
+        .books-table { width: 100%; border-collapse: collapse; background: white; }
+        .books-table th { background: #2c3e50; color: white; padding: 12px; text-align: center; }
+        .books-table td { padding: 12px; border-bottom: 1px solid #eeeff1; text-align: center; }
+        .books-table tr:hover { background: #f8f9fa; }
+        
+        /* أوسمة التصنيفات والمستويات */
+        .badge-cat { background: #e1b12c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-level { background: #6c5ce7; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-subject { background: #57606f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+        /* تنسيق شاشة عرض الـ PDF وتعديل البيانات (Modals) */
+        .pdf-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { position: relative; background-color: #fff; margin: 2% auto; width: 85%; height: 88%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* تنسيق نافذة التعديل الصغيرة والملمومة */
+        .edit-modal-content { max-width: 650px; height: auto; margin: 5% auto; padding: 25px; border-radius: 12px; }
+        
+        .modal-header { padding: 15px 20px; background: #2c3e50; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .close-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+        .close-btn:hover { background: #c0392b; }
+        .pdf-iframe { width: 100%; height: 100%; border: none; }
+
+        /* 🛡️ طبقة حماية شفافة لمنع النقر على زر الفتح الخارجي بجوجل درايف */
+        .block-google-popout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 160px;          /* المساحة التي تغطي أدوات جوجل العلوية اليمنى */
+            height: 55px;          /* الارتفاع المناسب لمنطقة شريط الأدوات */
+            background-color: transparent; /* شفافة بالكامل لحفظ المظهر العام */
+            z-index: 10;           /* تضمن البقاء فوق الإطار لاستقبال الضغطات */
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <div class="main-content">
+        <div class="container">
+            <a href="/books/admin" class="back-link">← العودة للوحة التحكم الرئيسية</a>
+
+            <div class="section-box">
+                <h2>إضافة كتاب تعليمي جديد لمستودع BTEC ➕</h2>
+                <form action="/books/add" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>عنوان الكتاب/الملف:</label>
+                            <input type="text" name="title" required placeholder="مثال: هندسة البرمجيات المتقدمة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>القسم (التصنيف):</label>
+                            <select name="category_id" required>
+                                <option value="">اختر القسم...</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>"><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>المستوى الفني (Level):</label>
+                            <select name="level" required>
+                                <option value="">اختر المستوى...</option>
+                                <option value="Level 2">المستوى الثاني (L2)</option>
+                                <option value="Level 3">المستوى الثالث (L3)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>رمز/اسم المادة الفنية:</label>
+                            <input type="text" name="subject_id" placeholder="مثال: btec_soft101">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>رابط الصورة المباشر (اختياري):</label>
+                            <input type="text" name="image_url" placeholder="https://example.com/image.jpg">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>رابط ملف الـ PDF للمادة:</label>
+                            <input type="url" name="pdf_url" required placeholder="أدخل رابط الملف من Google Drive">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">حفظ وإضافة الكتاب فوراً 🚀</button>
+                </form>
+            </div>
+
+            <div class="section-box">
+                <h2>قائمة الكتب الحالية في النظام 📚</h2>
+                <input type="text" id="bookSearch" class="search-box" onkeyup="filterBooks()" placeholder="🔍 ابدأ بكتابة اسم الكتاب للبحث الفوري والسريع...">
+                
+                <table class="books-table" id="booksTable">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">عنوان الكتاب</th>
+                            <th>القسم العلمي</th>
+                            <th>المستوى (Level)</th>
+                            <th>المادة (Subject)</th>
+                            <th>ملف الـ PDF</th>
+                            <th>العمليات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% books.forEach(book => { %>
+                            <tr>
+                                <td style="font-weight: bold; text-align: right;"><%= book.title %></td>
+                                
+                                <td><span class="badge-cat"><%= book.category_name || 'عام' %></span></td>
+                                
+                                <td>
+                                    <% if(book.level) { %>
+                                        <span class="badge-level"><%= book.level %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">غير محدد</span>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <% if(book.subject_id) { %>
+                                        <span class="badge-subject"><%= book.subject_id %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">-</span>
+                                    <% } %>
+                                </td>
+                                
+                                <td>
+                                    <a href="#" onclick="openPdfModal('<%= book.pdf_url %>', '<%= book.title %>'); return false;" style="color: #e74c3c; text-decoration: none; font-weight: bold;">📄 عرض الملف داخلياً</a>
+                                </td>
+                                
+                                <td>
+                                    <a href="#" class="btn-edit" onclick="openEditModal('<%= book.id %>', '<%= book.title %>', '<%= book.category_id %>', '<%= book.level %>', '<%= book.subject_id %>', '<%= book.image_url %>', '<%= book.pdf_url %>'); return false;">✏️ </a>
+                                    
+                                    <a href="/books/delete/<%= book.id %>" class="btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا الكتاب نهائياً؟')">🗑️ </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfViewerModal" class="pdf-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalBookTitle">عرض مستند الكتاب</h3>
+                <button class="close-btn" onclick="closePdfModal()">إغلاق الملف ✖</button>
+            </div>
+            <div style="position: relative; width: 100%; height: 100%; flex-grow: 1;">
+                <div class="block-google-popout"></div>
+                <iframe id="modalIframe" class="pdf-iframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="editBookModal" class="pdf-modal">
+        <div class="modal-content edit-modal-content">
+            <div class="modal-header" style="border-radius: 8px 8px 0 0; margin: -25px -25px 20px -25px; padding: 12px 20px;">
+                <h3>تعديل بيانات الكتاب التعليمي ✏️</h3>
+                <button class="close-btn" onclick="closeEditModal()">إلغاء ✖</button>
+            </div>
+            <form id="editBookForm" action="/books/edit" method="POST">
+                
+                <input type="hidden" id="edit_id" name="id">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>عنوان الكتاب/الملف:</label>
+                        <input type="text" id="edit_title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>القسم (التصنيف):</label>
+                        <select id="edit_category_id" name="category_id" required>
+                            <option value="">اختر القسم...</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>المستوى الفني (Level):</label>
+                        <select id="edit_level" name="level" required>
+                            <option value="">اختر المستوى...</option>
+                            <option value="Level 2">المستوى الثاني (L2)</option>
+                            <option value="Level 3">المستوى الثالث (L3)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>رمز/اسم المادة الفنية:</label>
+                        <input type="text" id="edit_subject_id" name="subject_id">
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>رابط الصورة المباشر (اختياري):</label>
+                        <input type="text" id="edit_image_url" name="image_url">
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>رابط ملف الـ PDF للمادة:</label>
+                        <input type="url" id="edit_pdf_url" name="pdf_url" required>
+                    </div>
+                </div>
+                <div style="text-align: left; margin-top: 15px;">
+                    <button type="submit" class="btn-submit" style="margin: 0; width: 100%;">تحديث وحفظ التغييرات 💾</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // دالة تصفية والبحث في الكتب بسرعة بدون تحميل الصفحة
+    function filterBooks() {
+        let input = document.getElementById('bookSearch').value.toLowerCase();
+        let table = document.getElementById('booksTable');
+        let tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                let textValue = td.textContent || td.innerText;
+                if (textValue.toLowerCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // وظيفة فتح نافذة الـ PDF المنبثقة
+    function openPdfModal(url, title) {
+        let cleanUrl = url;
+        
+        if (url.includes('drive.google.com') && url.includes('/view')) {
+            cleanUrl = url.replace('/view', '/preview');
+        }
+
+        document.getElementById('modalBookTitle').innerText = "معاينة: " + title;
+        document.getElementById('modalIframe').src = cleanUrl;
+        document.getElementById('pdfViewerModal').style.display = "block";
+        document.body.style.overflow = "hidden"; // منع سكرول الصفحة الخلفية أثناء المعاينة
+    }
+
+    // وظيفة إغلاق نافذة الـ PDF المنبثقة وتفريغ الإطار لتوفير الاستهلاك
+    function closePdfModal() {
+        document.getElementById('pdfViewerModal').style.display = "none";
+        document.getElementById('modalIframe').src = "";
+        document.body.style.overflow = "auto"; // إعادة السكرول الطبيعي للصفحة
+    }
+
+    // ✏️ وظيفة فتح نافذة التعديل وتعبئة البيانات بشكل تلقائي فوراً
+    function openEditModal(id, title, category_id, level, subject_id, image_url, pdf_url) {
+        // بدلاً من جعل المعرّف في الرابط، نقوم بتخزينه داخل الحقل المخفي
+        document.getElementById('edit_id').value = id;
+        
+        document.getElementById('edit_title').value = title;
+        document.getElementById('edit_category_id').value = category_id;
+        document.getElementById('edit_level').value = level;
+        document.getElementById('edit_subject_id').value = subject_id !== 'null' ? subject_id : '';
+        document.getElementById('edit_image_url').value = image_url !== 'null' ? image_url : '';
+        document.getElementById('edit_pdf_url').value = pdf_url;
+        
+        document.getElementById('editBookModal').style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
+    // وظيفة إغلاق نافذة التعديل المنبثقة
+    function closeEditModal() {
+        document.getElementById('editBookModal').style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+    </script>
+
+    <%- include('footer') %>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة مستودع الكتب 📚</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+        .main-content { padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #2980b9; text-decoration: none; font-weight: bold; }
+        .section-box { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; }
+        .section-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* ✨ تحديث وإصلاح شبكة النموذج ليكون مرناً ومتجاوباً */
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 15px; 
+        }
+        .form-group { display: flex; flex-direction: column; justify-content: center; }
+        .form-group label { margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        
+        /* منع الحقول من تجاوز عرض الأب المخصص لها */
+        .form-group input, .form-group select { 
+            padding: 10px; 
+            border: 2px solid #dcdde1; 
+            border-radius: 6px; 
+            outline: none; 
+            font-size: 14px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #27ae60; }
+        
+        /* ✨ التنسيق الاحترافي والمضمون للشيك بوكس الذكي لمنع التداخل وسهولة النقر */
+        .checkbox-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            background: #fff8f5;
+            padding: 12px 15px;
+            border: 2px dashed #e67e22;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #e67e22;
+            cursor: pointer;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .checkbox-group span {
+            margin: 0;
+            cursor: pointer;
+            color: #d35400;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .btn-submit { padding: 12px 35px; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        .btn-submit:hover { background: #219653; }
+        
+        .btn-edit { color: #2980b9; text-decoration: none; font-weight: bold; margin-left: 10px; font-size: 15px; }
+        .btn-edit:hover { text-decoration: underline; }
+        .btn-delete { text-decoration: none; color: #e74c3c; font-size: 15px; font-weight: bold; }
+        .btn-delete:hover { text-decoration: underline; }
+
+        .search-box { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #2980b9; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        
+        .books-table { width: 100%; border-collapse: collapse; background: white; }
+        .books-table th { background: #2c3e50; color: white; padding: 12px; text-align: center; }
+        .books-table td { padding: 12px; border-bottom: 1px solid #eeeff1; text-align: center; }
+        .books-table tr:hover { background: #f8f9fa; }
+        
+        .badge-cat { background: #e1b12c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-level { background: #6c5ce7; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-subject { background: #57606f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+        .badge-teacher { background: #e67e22; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+
+        .pdf-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { position: relative; background-color: #fff; margin: 2% auto; width: 85%; height: 88%; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
+        
+        .edit-modal-content { max-width: 650px; height: auto; margin: 5% auto; padding: 25px; border-radius: 12px; }
+        
+        .modal-header { padding: 15px 20px; background: #2c3e50; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .close-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+        .close-btn:hover { background: #c0392b; }
+        .pdf-iframe { width: 100%; height: 100%; border: none; }
+
+        .block-google-popout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 160px;
+            height: 55px;
+            background-color: transparent;
+            z-index: 10;
+            cursor: default;
+        }
+
+        /* 📱 تحسين الميديا كويري للهواتف لمنع الانعجاق تماماً */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group {
+                grid-column: span 1 !important;
+            }
+            .checkbox-group span {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('header') %>
+
+    <div class="main-content">
+        <div class="container">
+            <a href="/books/admin" class="back-link">← العودة للوحة التحكم الرئيسية</a>
+
+            <div class="section-box">
+                <h2>إضافة كتاب تعليمي جديد لمستودع BTEC ➕</h2>
+                <form action="/books/add" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="add_title">عنوان الكتاب/الملف:</label>
+                            <input type="text" id="add_title" name="title" required placeholder="مثال: هندسة البرمجيات المتقدمة">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="add_category_id">القسم (التصنيف):</label>
+                            <select id="add_category_id" name="category_id" required>
+                                <option value="">اختر القسم...</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>"><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add_level">المستوى الفني (Level):</label>
+                            <select id="add_level" name="level" required>
+                                <option value="">اختر المستوى...</option>
+                                <option value="Level 2">المستوى الثاني (L2)</option>
+                                <option value="Level 3">المستوى الثالث (L3)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add_subject_id">رمز/اسم المادة الفنية:</label>
+                            <input type="text" id="add_subject_id" name="subject_id" placeholder="مثال: btec_soft101">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="add_image_url">رابط الصورة المباشر (اختياري):</label>
+                            <input type="text" id="add_image_url" name="image_url" placeholder="https://example.com/image.jpg">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="add_pdf_url">رابط ملف الـ PDF للمادة:</label>
+                            <input type="url" id="add_pdf_url" name="pdf_url" required placeholder="أدخل رابط الملف من Google Drive">
+                        </div>
+
+                        <div class="form-group" style="grid-column: span 2; margin-top: 10px;">
+                            <label class="checkbox-group" for="is_teacher_only">
+                                <input type="checkbox" id="is_teacher_only" name="is_teacher_only" value="true">
+                                <span>🔒 جعل هذا الملف خاص بالمعلمين فقط (لن يظهر للطلاب)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">حفظ وإضافة الكتاب فوراً 🚀</button>
+                </form>
+            </div>
+
+            <div class="section-box">
+                <h2>قائمة الكتب الحالية في النظام 📚</h2>
+                <input type="text" id="bookSearch" class="search-box" onkeyup="filterBooks()" placeholder="🔍 ابدأ بكتابة اسم الكتاب للبحث الفوري والسريع...">
+                
+                <table class="books-table" id="booksTable">
+                    <thead>
+                        <tr>
+                            <th style="text-align: right;">عنوان الكتاب</th>
+                            <th>القسم العلمي</th>
+                            <th>المستوى (Level)</th>
+                            <th>المادة (Subject)</th>
+                            <th>الجمهور المستهدف</th>
+                            <th>ملف الـ PDF</th>
+                            <th>العمليات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% books.forEach(book => { %>
+                            <tr>
+                                <td style="font-weight: bold; text-align: right;"><%= book.title %></td>
+                                
+                                <td><span class="badge-cat"><%= book.category_name || 'عام' %></span></td>
+                                
+                                <td>
+                                    <% if(book.level) { %>
+                                        <span class="badge-level"><%= book.level %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">غير محدد</span>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <% if(book.subject_id) { %>
+                                        <span class="badge-subject"><%= book.subject_id %></span>
+                                    <% } else { %>
+                                        <span style="color:#aaa; font-size:12px;">-</span>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <% if(book.is_teacher_only == 1 || book.is_teacher_only === true || book.is_teacher_only === 'true') { %>
+                                        <span class="badge-teacher">🔐 للمعلمين فقط</span>
+                                    <% } else { %>
+                                        <span style="color:#27ae60; font-size:13px; font-weight:600;">👥 متاح للجميع</span>
+                                    <% } %>
+                                </td>
+                                
+                                <td>
+                                    <a href="#" onclick="openPdfModal('<%= book.pdf_url %>', '<%= book.title %>'); return false;" style="color: #e74c3c; text-decoration: none; font-weight: bold;">📄 عرض الملف داخلياً</a>
+                                </td>
+                                
+                                <td>
+                                    <a href="#" class="btn-edit" onclick="openEditModal('<%= book.id %>', '<%= book.title %>', '<%= book.category_id %>', '<%= book.level %>', '<%= book.subject_id %>', '<%= book.image_url %>', '<%= book.pdf_url %>', '<%= book.is_teacher_only %>'); return false;">✏️ </a>
+                                    <a href="/books/delete/<%= book.id %>" class="btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا الكتاب نهائياً؟')">🗑️ </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfViewerModal" class="pdf-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalBookTitle">عرض مستند الكتاب</h3>
+                <button class="close-btn" onclick="closePdfModal()">إغلاق الملف ✖</button>
+            </div>
+            <div style="position: relative; width: 100%; height: 100%; flex-grow: 1;">
+                <div class="block-google-popout"></div>
+                <iframe id="modalIframe" class="pdf-iframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="editBookModal" class="pdf-modal">
+        <div class="modal-content edit-modal-content">
+            <div class="modal-header" style="border-radius: 8px 8px 0 0; margin: -25px -25px 20px -25px; padding: 12px 20px;">
+                <h3>تعديل بيانات الكتاب التعليمي ✏️</h3>
+                <button class="close-btn" onclick="closeEditModal()">إلغاء ✖</button>
+            </div>
+            <form id="editBookForm" action="/books/edit" method="POST">
+                <input type="hidden" id="edit_id" name="id">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="edit_title">عنوان الكتاب/الملف:</label>
+                        <input type="text" id="edit_title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_category_id">القسم (التصنيف):</label>
+                        <select id="edit_category_id" name="category_id" required>
+                            <option value="">اختر القسم...</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_level">المستوى الفني (Level):</label>
+                        <select id="edit_level" name="level" required>
+                            <option value="">اختر المستوى...</option>
+                            <option value="Level 2">المستوى الثاني (L2)</option>
+                            <option value="Level 3">المستوى الثالث (L3)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="edit_subject_id">رمز/اسم المادة الفنية:</label>
+                        <input type="text" id="edit_subject_id" name="subject_id">
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="edit_image_url">رابط الصورة المباشر (اختياري):</label>
+                        <input type="text" id="edit_image_url" name="image_url">
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="edit_pdf_url">رابط ملف الـ PDF للمادة:</label>
+                        <input type="url" id="edit_pdf_url" name="pdf_url" required>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2; margin-top: 5px;">
+                        <label class="checkbox-group" for="edit_is_teacher_only">
+                            <input type="checkbox" id="edit_is_teacher_only" name="is_teacher_only" value="true">
+                            <span>🔒 جعل هذا الملف خاص بالمعلمين فقط (لن يظهر للطلاب)</span>
+                        </label>
+                    </div>
+                </div>
+                <div style="text-align: left; margin-top: 15px;">
+                    <button type="submit" class="btn-submit" style="margin: 0; width: 100%;">تحديث وحفظ التغييرات 💾</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function filterBooks() {
+        let input = document.getElementById('bookSearch').value.toLowerCase();
+        let table = document.getElementById('booksTable');
+        let tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            let td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                let textValue = td.textContent || td.innerText;
+                if (textValue.toLowerCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function openPdfModal(url, title) {
+        let cleanUrl = url;
+        if (url.includes('drive.google.com') && url.includes('/view')) {
+            cleanUrl = url.replace('/view', '/preview');
+        }
+        document.getElementById('modalBookTitle').innerText = "معاينة: " + title;
+        document.getElementById('modalIframe').src = cleanUrl;
+        document.getElementById('pdfViewerModal').style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closePdfModal() {
+        document.getElementById('pdfViewerModal').style.display = "none";
+        document.getElementById('modalIframe').src = "";
+        document.body.style.overflow = "auto";
+    }
+
+    function openEditModal(id, title, category_id, level, subject_id, image_url, pdf_url, is_teacher_only) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_title').value = title;
+        document.getElementById('edit_category_id').value = category_id;
+        document.getElementById('edit_level').value = level;
+        document.getElementById('edit_subject_id').value = subject_id !== 'null' ? subject_id : '';
+        document.getElementById('edit_image_url').value = image_url !== 'null' ? image_url : '';
+        document.getElementById('edit_pdf_url').value = pdf_url;
+        
+        const checkbox = document.getElementById('edit_is_teacher_only');
+        if (is_teacher_only === '1' || is_teacher_only === 'true' || is_teacher_only === true) {
+            checkbox.checked = true;
+        } else {
+            checkbox.checked = false;
+        }
+        
+        document.getElementById('editBookModal').style.display = "block";
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeEditModal() {
+        document.getElementById('editBookModal').style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+    
+       document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && ['I','J'].includes(e.key)) || 
+                (e.ctrlKey && ['u','s'].includes(e.key))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+
+    <%- include('footer') %>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>المكتبة المدرسية العامة</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 🌟 تصفير الهوامش لضمان التصاق الهيدر بالسقف واختفاء الفراغ تماماً */
+        html, body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            min-height: 100%;
+            position: relative;
+        }
+
+        body {
+            padding-bottom: 80px; /* مساحة إضافية مريحة لضمان عدم تغطية الفوتر للمحتوى */
+            background-color: #f5f6fa;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* 🗂️ تنسيق منطقة الفلترة والقوائم المنسدلة */
+        .filter-container {
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #dcdde1;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0,123,255,0.2);
+        }
+
+        /* 🔄 زر إعادة التعيين وعرض الكل */
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 23px;
+            transition: background 0.2s;
+        }
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* 🗴 شبكة عرض كروت الكتب */
+      .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* إضافة هذه الخاصية تجعل الكروت في الصف الواحد متساوية في الارتفاع */
+    align-items: stretch; 
+}
+
+        /* التحكم بالظهور والإخفاء عبر الـ JavaScript */
+        .book-card-item {
+            display: block; 
+        }
+
+     .book-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #eee;
+    
+    /* جعل الكرت Flexbox عمودي */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* إجبار الكرت على أخذ كامل طول الخلية في الشبكة */
+}
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 🏷️ أوسمة التصنيفات والمواد داخل الكرت */
+        .book-badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge-level {
+            background-color: #f39c12;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-subject {
+            background-color: #34495e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+     .book-card .read-btn {
+    margin-top: auto; /* هذه الخاصية تدفع الزر للأسفل مهما كان طول العنوان */
+    display: block;
+    text-align: center;
+    background-color: #27ae60;
+    color: #ffffff !important;
+    padding: 10px;
+    text-decoration: none !important;
+    border-radius: 6px;
+    font-weight: bold;
+}
+        .book-card .read-btn:hover {
+            background-color: #219150;
+        }
+
+        .book-cover-wrapper {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #f1f2f6;
+            margin-bottom: 12px;
+        }
+        .book-cover-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        header {
+            flex-wrap: wrap !important;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            header input {
+                width: 100% !important;
+            }
+            .filter-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .reset-btn {
+                margin-top: 5px;
+                width: 100%;
+            }
+        }
+
+     
+        /* إعداد الصفحة لتعمل بنظام Flexbox */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* تأخذ كامل طول الشاشة */
+    display: flex;
+    flex-direction: column; /* ترتيب العناصر عمودياً */
+}
+
+/* نجعل الـ main يأخذ كل المساحة المتبقية */
+main {
+    flex: 1; /* هذه هي الخاصية الأهم: تجبر الـ main على التمدد لملء الفراغ */
+}
+
+/* الفوتر */
+footer {
+    width: 100%;
+    /* لا تستخدم position: absolute أو fixed هنا */
+}
+.main-header {
+    background: #2c3e50;
+    padding: 15px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo { font-size: 1.4rem; font-weight: bold; white-space: nowrap; }
+
+.search-wrapper { flex: 1; max-width: 400px; }
+.search-wrapper input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+}
+
+.nav-links { display: flex; align-items: center; gap: 20px; }
+.nav-links a { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; }
+.nav-links a:hover { color: #f39c12; }
+
+.user-menu { display: flex; align-items: center; gap: 15px; border-right: 1px solid #5d6d7e; padding-right: 15px; }
+
+.btn-admin { color: #27ae60 !important; font-weight: bold; }
+.btn-logout { color: #e74c3c !important; font-weight: bold; }
+.btn-login { background: #27ae60; padding: 8px 18px; border-radius: 6px; }
+
+/* تحسين تجاوب الهيدر مع الشاشات الصغيرة */
+@media (max-width: 900px) {
+    .main-header { flex-direction: column; text-align: center; }
+    .search-wrapper { width: 100%; }
+    .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .user-menu { border-right: none; padding-right: 0; }
+}
+
+    </style>
+</head>
+<body>
+   <header class="main-header">
+    <div class="logo">المكتبة المدرسية الرقمية 📚</div>
+
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="ابحث عن اسم الكتاب..." onkeyup="searchBooks()">
+    </div>
+
+    <nav class="nav-links">
+        <a href="/">الرئيسية</a>
+        <a href="/about1">من نحن</a>
+        <a href="/team">فريق العمل</a>
+        
+        <% if (user) { %>
+            <div class="user-menu">
+                <span>مرحباً، <%= user.username %></span>
+                <% if(user.role === 'admin') { %> 
+                    <a href="/books/admin" class="btn-admin">لوحة الإدارة</a> 
+                <% } else { %> 
+                    <a href="/books/teacher" class="btn-admin">كتب المعلمين</a> 
+                <% } %>
+                <a href="/auth/logout" class="btn-logout">خروج</a>
+            </div>
+        <% } else { %>
+            <a href="/auth/login" class="btn-login">دخول الإدارة</a>
+        <% } %>
+    </nav>
+</header>
+    <main style="padding: 20px; display: flow-root;">
+      
+        <h2 style="text-align: center; color: #2c3e50; margin-top: 10px;">الكتب العامة المتاحة للطلاب والزوار</h2>
+
+        <div class="filter-container">
+            <div class="filter-group">
+                <label>القسم الرئيسي:</label>
+                <select id="categorySelect" class="filter-select" onchange="updateLevelsDropdown()">
+                    <option value="all">✨ كل الأقسام</option>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat.id %>"><%= cat.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>المستوى (Level):</label>
+                <select id="levelSelect" class="filter-select" onchange="updateSubjectsDropdown()" disabled>
+                    <option value="all">اختر القسم أولاً..</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>المادة الدراسية:</label>
+                <select id="subjectSelect" class="filter-select" onchange="filterBooks()" disabled>
+                    <option value="all">اختر المستوى أولاً..</option>
+                </select>
+            </div>
+
+            <button class="reset-btn" onclick="resetFilters()">🔄 إعادة تعيين</button>
+        </div>
+
+        <div class="books-grid" id="booksGrid">
+            <% books.forEach(book => { %>
+                <div class="book-card-item" 
+                     data-category="<%= book.category_id || 'null' %>"
+                     data-level="<%= book.level || 'null' %>"
+                     data-subject="<%= book.subject_id || 'null' %>">
+                    <div class="book-card">
+                        
+                        <div class="book-badges">
+                            <% if(book.level && book.level !== 'null') { %>
+                                <span class="badge-level"><%= book.level %></span>
+                            <% } %>
+                            <% if(book.subject_id && book.subject_id !== 'null') { %>
+                                <span class="badge-subject"><%= book.subject_id %></span>
+                            <% } %>
+                        </div>
+
+                        <div class="book-cover-wrapper">
+                            <img src="<%= book.image_url %>" alt="غلاف الكتاب" referrerpolicy="no-referrer">
+                        </div>
+                        <h3 style="margin: 10px 0; color: #2c3e50; font-size: 1.1rem;"><%= book.title %></h3>
+                        <a href="/books/view/<%= book.id %>" target="_blank" class="read-btn">قراءة الكتاب</a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </main>
+
+    <script>
+        // 1. تحديث قائمة المستويات المتاحة بناءً على الأقسام المكتشفة في الكروت الموجودة
+        function updateLevelsDropdown() {
+            const catId = document.getElementById('categorySelect').value;
+            const levelSelect = document.getElementById('levelSelect');
+            const subjectSelect = document.getElementById('subjectSelect');
+            
+            levelSelect.innerHTML = '<option value="all">✨ كل المستويات</option>';
+            subjectSelect.innerHTML = '<option value="all">اختر المستوى أولاً..</option>';
+            subjectSelect.disabled = true;
+
+            if (catId === 'all') {
+                levelSelect.disabled = true;
+                filterBooks();
+                return;
+            }
+
+            const levels = new Set();
+            document.querySelectorAll(`.book-card-item[data-category="${catId}"]`).forEach(card => {
+                const lvl = card.getAttribute('data-level');
+                if (lvl && lvl !== 'null') levels.add(lvl);
+            });
+
+            if (levels.size > 0) {
+                levels.forEach(lvl => {
+                    levelSelect.innerHTML += `<option value="${lvl}">${lvl}</option>`;
+                });
+                levelSelect.disabled = false;
+            } else {
+                levelSelect.innerHTML = '<option value="all">لا توجد مستويات مضافة</option>';
+                levelSelect.disabled = true;
+            }
+            
+            filterBooks();
+        }
+
+        // 2. تحديث قائمة المواد المتاحة بناءً على المستوى المختار
+        function updateSubjectsDropdown() {
+            const catId = document.getElementById('categorySelect').value;
+            const levelId = document.getElementById('levelSelect').value;
+            const subjectSelect = document.getElementById('subjectSelect');
+
+            subjectSelect.innerHTML = '<option value="all">✨ كل المواد</option>';
+
+            if (levelId === 'all') {
+                subjectSelect.disabled = true;
+                filterBooks();
+                return;
+            }
+
+            const subjects = new Set();
+            document.querySelectorAll(`.book-card-item[data-category="${catId}"][data-level="${levelId}"]`).forEach(card => {
+                const sub = card.getAttribute('data-subject');
+                if (sub && sub !== 'null') subjects.add(sub);
+            });
+
+            if (subjects.size > 0) {
+                subjects.forEach(sub => {
+                    subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+                });
+                subjectSelect.disabled = false;
+            } else {
+                subjectSelect.innerHTML = '<option value="all">لا توجد مواد مضافة</option>';
+                subjectSelect.disabled = true;
+            }
+
+            filterBooks();
+        }
+
+        // 3. الفلترة الكلية والشاملة للكروت بناءً على كل القوائم المنسدلة + البحث النصي
+        function filterBooks() {
+            const catVal = document.getElementById('categorySelect').value;
+            const lvlVal = document.getElementById('levelSelect').value;
+            const subVal = document.getElementById('subjectSelect').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            const cards = document.querySelectorAll('.book-card-item');
+
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                const cardLvl = card.getAttribute('data-level');
+                const cardSub = card.getAttribute('data-subject');
+                const cardTitle = card.querySelector('h3').innerText.toLowerCase();
+
+                const matchCat = (catVal === 'all' || cardCat === catVal);
+                const matchLvl = (lvlVal === 'all' || cardLvl === lvlVal);
+                const matchSub = (subVal === 'all' || cardSub === subVal);
+                const matchSearch = cardTitle.includes(searchVal);
+
+                if (matchCat && matchLvl && matchSub && matchSearch) {
+                    card.style.display = ''; 
+                } else {
+                    card.style.display = 'none'; 
+                }
+            });
+        }
+
+        // 4. ربط حقل البحث الفوري بدالة الفلترة الشاملة
+        function searchBooks() {
+            filterBooks();
+        }
+
+        // 5. زر إعادة التعيين لإرجاع كل شيء كما كان
+        function resetFilters() {
+            document.getElementById('categorySelect').value = 'all';
+            document.getElementById('searchInput').value = '';
+            
+            const levelSelect = document.getElementById('levelSelect');
+            levelSelect.innerHTML = '<option value="all">اختر القسم أولاً..</option>';
+            levelSelect.disabled = true;
+
+            const subjectSelect = document.getElementById('subjectSelect');
+            subjectSelect.innerHTML = '<option value="all">اختر المستوى أولاً..</option>';
+            subjectSelect.disabled = true;
+
+            filterBooks();
+        }
+
+        // حماية المحتوى والـ Inspect Element
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && ['I','J'].includes(e.key)) || 
+                (e.ctrlKey && ['u','s'].includes(e.key))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+    <%- include('footer') %>
+</body>
+</html>

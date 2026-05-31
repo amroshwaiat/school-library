@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>قسم المناهج والكتب الخاصة بالمعلمين 🔐</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        html, body { margin: 0; padding: 0; box-sizing: border-box; background-color: #f5f6fa; font-family: system-ui, sans-serif; min-height: 100%; position: relative; padding-bottom: 60px; }
+        
+        /* 🌟 تنسيق بار الفلترة المطور والمطابق للصورة */
+        .advanced-filter-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #eeeff1;
+            margin: 25px auto;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 220px;
+        }
+        .filter-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #dcdde1;
+            border-radius: 8px;
+            background-color: white;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .filter-select:focus {
+            border-color: #2980b9;
+        }
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            align-self: flex-end;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-reset:hover { background: #c0392b; }
+
+        /* شبكة عرض كروت الكتب */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 15px;
+            align-items: start;
+        }
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 500px;
+            box-sizing: border-box;
+        }
+        .book-card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+        .book-cover-wrapper {
+            width: 100%; height: 220px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px; overflow: hidden; margin-bottom: 15px; border: 1px dashed #e0e0e0;
+        }
+        .book-cover-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+
+        .book-card h4 { margin: 10px 0 5px 0; color: #2c3e50; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 50px; }
+
+        .book-tags { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .tag-badge { font-size: 11px; padding: 4px 10px; border-radius: 50px; font-weight: 600; }
+        .tag-level { background: #eef2f7; color: #34495e; border: 1px solid #dcdde1; }
+        .tag-subject { background: #e8f4fd; color: #2980b9; border: 1px solid #d2e7f7; }
+
+        footer { position: absolute; bottom: 0; width: 100%; height: 60px; }
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* تأخذ كامل طول الشاشة */
+    display: flex;
+    flex-direction: column; /* ترتيب العناصر عمودياً */
+}
+
+/* نجعل الـ main يأخذ كل المساحة المتبقية */
+main {
+    flex: 1; /* هذه هي الخاصية الأهم: تجبر الـ main على التمدد لملء الفراغ */
+}
+
+/* الفوتر */
+footer {
+    width: 100%;
+    /* لا تستخدم position: absolute أو fixed هنا */
+}
+    </style>
+</head>
+<body>
+
+    <header style="background: #2c3e50; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <h2 style="margin: 0; font-size: 1.2rem; flex: 1 1 200px;">قسم المناهج والكتب 🔐</h2>
+        
+        <input type="text" id="searchInput" placeholder="ابحث باسم الكتاب سرياً...🔍" onkeyup="filterBooks()" 
+               style="padding: 10px; border-radius: 20px; border: none; flex: 2 1 300px; max-width: 400px;">
+        
+        <nav style="display: flex; gap: 15px; flex: 1 1 150px; justify-content: flex-end;">
+            <a href="/" style="color: white; text-decoration: none;">الرئيسية</a>
+            <a href="/auth/logout" style="color: #ff7675; text-decoration: none; font-weight: bold;">خروج</a>
+        </nav>
+    </header>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h3 style="text-align: center; color: #34495e; margin-top: 20px;">الكتب والمراجع المتاحة لك بصفتك معلماً:</h3>
+
+        <div class="advanced-filter-wrapper">
+            
+            <div class="filter-group">
+                <label>القسم الرئيسي:</label>
+                <select id="categorySelect" class="filter-select" onchange="updateFilters()">
+                    <option value="all">✨ كل الأقسام</option>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat.id %>"><%= cat.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>المستوى (Level):</label>
+                <select id="levelSelect" class="filter-select" onchange="filterBooks()" disabled>
+                    <option value="all">اختر القسم أولاً..</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>المادة الدراسية:</label>
+                <select id="subjectSelect" class="filter-select" onchange="filterBooks()" disabled>
+                    <option value="all">اختر المستوى أولاً..</option>
+                </select>
+            </div>
+
+            <button class="btn-reset" onclick="resetFilters()">
+                <i class="fa-solid fa-rotate-left"></i> إعادة تعيين
+            </button>
+        </div>
+
+        <div class="books-grid" id="teacherBooksContainer">
+            <% if (books && books.length > 0) { %>
+                <% books.forEach(book => { %>
+                    <div class="book-card" 
+                         data-category="<%= book.category_id || 'null' %>" 
+                         data-level="<%= (book.level || '').trim().toLowerCase() %>" 
+                         data-subject="<%= (book.subject_id || '').trim().toLowerCase() %>">
+                        
+                        <div class="book-cover-wrapper">
+                            <img src="<%= book.image_url || 'https://cdn-icons-png.flaticon.com/512/330/330731.png' %>" 
+                                 alt="غلاف الكتاب" referrerpolicy="no-referrer">
+                        </div>
+                        
+                        <h4><%= book.title %></h4>
+
+                        <div class="book-tags">
+                            <% if (book.level) { %>
+                                <span class="tag-badge tag-level"><i class="fa-solid fa-layer-group"></i> <%= book.level %></span>
+                            <% } %>
+                            <% if (book.subject_id) { %>
+                                <span class="tag-badge tag-subject"><i class="fa-solid fa-book-open"></i> <%= book.subject_id %></span>
+                            <% } %>
+                        </div>
+                        
+                        <div>
+                            <span style="background: #e67e22; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 15px; font-weight: bold;">خاص بالمعلمين</span>
+                            <a href="/books/view/<%= book.id %>" target="_blank" class="read-btn" style="background: #2c3e50; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; display: block; font-weight: bold;">فتح وقراءة الكتاب</a>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p style="text-align: center; grid-column: 1/-1; color: #7f8c8d;">لا يوجد كتب مضافة حالياً في هذا القسم للأسف.</p>
+            <% } %>
+        </div>
+    </main>
+
+    <script>
+    // دالة ديناميكية لتحديث خيارات المستويات والمواد بناءً على الكتب المتوفرة في القسم المختار
+    function updateFilters() {
+        const catSelect = document.getElementById('categorySelect').value;
+        const levelSelect = document.getElementById('levelSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
+        const cards = document.querySelectorAll('.book-card');
+
+        // إعادة ضبط القوائم الفرعية وتفريغها
+        levelSelect.innerHTML = '<option value="all">✨ كل المستويات</option>';
+        subjectSelect.innerHTML = '<option value="all">✨ كل المواد</option>';
+
+        if (catSelect === 'all') {
+            levelSelect.disabled = true;
+            subjectSelect.disabled = true;
+            levelSelect.innerHTML = '<option value="all">اختر القسم أولاً..</option>';
+            subjectSelect.innerHTML = '<option value="all">اختر المستوى أولاً..</option>';
+            filterBooks();
+            return;
+        }
+
+        // تجميع المستويات والمواد الفرعية الفريدة للقسم المختار فقط من كروت الكتب المعروضة
+        let uniqueLevels = new Set();
+        let uniqueSubjects = new Set();
+
+        cards.forEach(card => {
+            if (card.getAttribute('data-category') === catSelect) {
+                const lvl = card.getAttribute('data-level');
+                const sbj = card.getAttribute('data-subject');
+                if (lvl) uniqueLevels.add(lvl);
+                if (sbj) uniqueSubjects.add(sbj);
+            }
+        });
+
+        // تعبئة قائمة المستويات
+        if (uniqueLevels.size > 0) {
+            levelSelect.disabled = false;
+            uniqueLevels.forEach(lvl => {
+                levelSelect.innerHTML += `<option value="${lvl}">${lvl.toUpperCase()}</option>`;
+            });
+        } else {
+            levelSelect.disabled = true;
+        }
+
+        // تعبئة قائمة المواد
+        if (uniqueSubjects.size > 0) {
+            subjectSelect.disabled = false;
+            uniqueSubjects.forEach(sbj => {
+                subjectSelect.innerHTML += `<option value="${sbj}">${sbj.toUpperCase()}</option>`;
+            });
+        } else {
+            subjectSelect.disabled = true;
+        }
+
+        filterBooks();
+    }
+
+    // دالة الفلترة الكلية والبحث (تجمع بين قيم الـ 3 قوائم المنسدلة وحقل البحث النصي معاً)
+    function filterBooks() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const catValue = document.getElementById('categorySelect').value;
+        const lvlValue = document.getElementById('levelSelect').value;
+        const sbjValue = document.getElementById('subjectSelect').value;
+        
+        const cards = document.querySelectorAll('.book-card');
+
+        cards.forEach(card => {
+            const title = card.querySelector('h4').innerText.toLowerCase();
+            const cardCat = card.getAttribute('data-category');
+            const cardLvl = card.getAttribute('data-level');
+            const cardSbj = card.getAttribute('data-subject');
+
+            // شروط الفلترة المترابطة
+            const matchSearch = title.includes(searchInput);
+            const matchCat = (catValue === 'all' || cardCat === catValue);
+            const matchLvl = (lvlValue === 'all' || lvlValue === 'choose' || cardLvl === lvlValue);
+            const matchSbj = (sbjValue === 'all' || sbjValue === 'choose' || cardSbj === sbjValue);
+
+            if (matchSearch && matchCat && matchLvl && matchSbj) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // دالة زر إعادة التعيين (Reset) لمسح الفلاتر والعودة للوضع الأصلي فوراً
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categorySelect').value = 'all';
+        updateFilters();
+    }
+
+    // حماية السورس كود والكليك يمين
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && ['I','J'].includes(e.key)) || 
+            (e.ctrlKey && ['u','s'].includes(e.key))) { 
+            e.preventDefault(); return false; 
+        }
+    });
+    </script>
+    <%- include('footer') %>
+</body>
+</html>
