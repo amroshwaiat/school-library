@@ -115,10 +115,10 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/books', bookRoutes);
 app.use('/admin', userRoutes);
-// app.use('/', indexRoutes); 
+app.use('/', indexRoutes); 
 
-// الصفحة الرئيسية للموقع (المكتبة العامة للجميع)
-app.get('/', bookController.getPublicBooks);
+// // الصفحة الرئيسية للموقع (المكتبة العامة للجميع)
+// app.get('/', bookController.getPublicBooks);
 
 // 6. تشغيل السيرفر وقاعدة البيانات
 const PORT = process.env.PORT || 3000;
