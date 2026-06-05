@@ -103,7 +103,17 @@
         .book-cover-wrapper img { width: 100%; height: 100%; object-fit: contain; }
 
         .book-card h4 { margin: 10px 0 5px 0; color: #2c3e50; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; min-height: 50px; }
-
+.book-card h4{
+    word-wrap: break-word;     /* كسر الكلمات الطويلة */
+    overflow-wrap: break-word; /* التأكد من عدم خروج الكلمات عن الإطار */
+    hyphens: auto;             /* إضافة شرطة عند الحاجة */
+    max-width: 100%;           /* عدم تجاوز عرض البطاقة */
+    display: -webkit-box;      /* إعداد للقص بعد عدد معين من الأسطر */
+    -webkit-line-clamp: 2;     /* السماح بسطرين فقط للعنوان */
+    -webkit-box-orient: vertical;
+    overflow: hidden;          /* إخفاء النص الزائد */
+    height: 3.5rem;            /* تحديد ارتفاع ثابت للعنوان لضمان محاذاة الأزرار */
+}
         .book-tags { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
         .tag-badge { font-size: 11px; padding: 4px 10px; border-radius: 50px; font-weight: 600; }
         .tag-level { background: #eef2f7; color: #34495e; border: 1px solid #dcdde1; }
