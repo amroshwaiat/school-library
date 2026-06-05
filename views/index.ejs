@@ -243,6 +243,18 @@ footer {
     border: none;
     outline: none;
 }
+/* هذا الكود يضمن بقاء النص داخل البطاقة */
+.book-card h3 {
+    word-wrap: break-word;     /* كسر الكلمات الطويلة */
+    overflow-wrap: break-word; /* التأكد من عدم خروج الكلمات عن الإطار */
+    hyphens: auto;             /* إضافة شرطة عند الحاجة */
+    max-width: 100%;           /* عدم تجاوز عرض البطاقة */
+    display: -webkit-box;      /* إعداد للقص بعد عدد معين من الأسطر */
+    -webkit-line-clamp: 2;     /* السماح بسطرين فقط للعنوان */
+    -webkit-box-orient: vertical;
+    overflow: hidden;          /* إخفاء النص الزائد */
+    height: 3.5rem;            /* تحديد ارتفاع ثابت للعنوان لضمان محاذاة الأزرار */
+}
 
 .nav-links { display: flex; align-items: center; gap: 20px; }
 .nav-links a { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; }
