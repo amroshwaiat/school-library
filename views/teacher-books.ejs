@@ -5,7 +5,7 @@
    
 <meta name="description" content="الموقع الرسمي لمكتبة بيتك مدرسة كفرنجه الثانوية للبنات. تصفح آلاف الكتب التعليمية والثقافية المتاحة للطالبات والمعلمات.">
 <meta name="keywords" content="مكتبة بيتك مدرسة كفرنجه, مدرسة كفرنجه الثانوية للبنات, مكتبة بيتك, تعليم, كتب رقمية, كفرنجه">
-     <link rel="icon" type="image/png" href="/images/favicon.png">
+     <link rel="icon" type="image/png" href="/images/logo.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <title>قسم المناهج والكتب الخاصة بالمعلمين 🔐</title>
@@ -126,6 +126,7 @@
     height: 100%; /* تأخذ كامل طول الشاشة */
     display: flex;
     flex-direction: column; /* ترتيب العناصر عمودياً */
+    background-color:  #4D8994;
 }
 
 /* نجعل الـ main يأخذ كل المساحة المتبقية */
@@ -143,7 +144,7 @@ footer {
 </head>
 <body>
 
-    <header style="background: #2c3e50; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+    <header style="background-color:  #1E3A5F; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
         <h2 style="margin: 0; font-size: 1.2rem; flex: 1 1 200px;">قسم المناهج والكتب 🔐</h2>
         
         <input type="text" id="searchInput" placeholder="ابحث باسم الكتاب سرياً...🔍" onkeyup="filterBooks()" 
@@ -156,7 +157,7 @@ footer {
     </header>
 
     <main style="max-width: 1200px; margin: 0 auto; padding: 20px;">
-        <h3 style="text-align: center; color: #34495e; margin-top: 20px;">الكتب والمراجع المتاحة لك بصفتك معلماً:</h3>
+        <h3 style="text-align: center; color: #ffffff; margin-top: 20px;">الكتب والمراجع المتاحة لك بصفتك معلماً:</h3>
 
         <div class="advanced-filter-wrapper">
             
@@ -215,7 +216,7 @@ footer {
                         
                         <div>
                             <span style="background: #e67e22; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 15px; font-weight: bold;">خاص بالمعلمين</span>
-                            <a href="/books/view/<%= book.id %>" target="_blank" class="read-btn" style="background: #2c3e50; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; display: block; font-weight: bold;">فتح وقراءة الكتاب</a>
+                            <a href="/books/view/<%= book.id %>" target="_blank" class="read-btn" style="background: #27ae60; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; display: block; font-weight: bold;">فتح وقراءة الكتاب</a>
                         </div>
                     </div>
                 <% }) %>

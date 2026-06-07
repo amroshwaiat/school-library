@@ -5,7 +5,7 @@
    
 <meta name="description" content="الموقع الرسمي لمكتبة بيتك مدرسة كفرنجه الثانوية للبنات. تصفح آلاف الكتب التعليمية والثقافية المتاحة للطالبات والمعلمات.">
 <meta name="keywords" content="مكتبة بيتك مدرسة كفرنجه, مدرسة كفرنجه الثانوية للبنات, مكتبة بيتك, تعليم, كتب رقمية, كفرنجه">
-   <link rel="icon" type="image/png" href="/images/favicon.png">
+   <link rel="icon" type="image/png" href="/images/logo.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <title>مكتبة بيتك - مدرسة كفرنجه الثانوية للبنات</title>
@@ -22,7 +22,7 @@
 
         body {
             padding-bottom: 80px; /* مساحة إضافية مريحة لضمان عدم تغطية الفوتر للمحتوى */
-            background-color: #f5f6fa;
+            background-color: #45838d;
             font-family: system-ui, -apple-system, sans-serif;
         }
 
@@ -182,6 +182,7 @@
 
         header {
             flex-wrap: wrap !important;
+            
         }
 
         @media (max-width: 600px) {
@@ -273,11 +274,87 @@ footer {
     .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px; }
     .user-menu { border-right: none; padding-right: 0; }
 }
+.hero-section {
+    /* الصورة والمسار */
+    background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)), url('/images/logo.jpeg');
+    
+    /* الخصائص التي تمنع التكرار وتضبط الصورة */
+    background-repeat: no-repeat;      /* يمنع تكرار الصورة نهائياً */
+    background-size: cover;            /* يجعلها تغطي كامل المساحة */
+    background-position: center;       /* يركز الصورة في المنتصف */
+    
+    /* أبعاد القسم */
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.hero {
+    position: relative;
+}
 
+.hero-image {
+    width: 100%;
+    display: block;
+}
+
+.hero-content {
+    position: absolute;
+    top: 3%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+.hero-btn {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    text-decoration: none;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #219150;
+    transform: translateY(-3px);
+}
+.main-header {
+    background: #2c3e50;
+    padding: 15px 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 9999;
+}
+body {
+    padding-top: 70px;
+}
+.main-header {
+   
+    top: 0;
+    z-index: 1000;
+}
+html {
+    scroll-behavior: smooth;
+}
     </style>
 </head>
 <body>
-   <header class="main-header">
+   <header class="main-header" style="background-color:#1E3A5F">
     <div class="logo">المكتبة المدرسية الرقمية 📚</div>
 
     <div class="search-wrapper">
@@ -304,7 +381,18 @@ footer {
         <% } %>
     </nav>
 </header>
-    <main style="padding: 20px; display: flow-root;">
+<section class="hero">
+    <img src="/images/logo9.png" class="hero-image">
+
+    <div class="hero-content">
+        
+
+        <a href="#books-section" class="hero-btn">
+            تصفح الكتب
+        </a>
+    </div>
+</section>
+    <main style="padding: 20px; display: flow-root;" id="books-section">
       
         <h2 style="text-align: center; color: #2c3e50; margin-top: 10px;">الكتب العامة المتاحة للطلاب والزوار</h2>
 
