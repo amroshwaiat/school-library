@@ -86,6 +86,7 @@
 </div>
 
 <div class="table-container">
+    <input type="text" id="userSearch" placeholder="ابحث عن مستخدم..." onkeyup="filterUsers()" style="margin-bottom: 20px; padding: 10px; width: 300px;">
     <table class="styled-table">
         <thead>
             <tr>
@@ -149,6 +150,26 @@
                 return false;
             }
         });
+        
+function filterUsers() {
+    let input = document.getElementById("userSearch");
+    let filter = input.value.toUpperCase();
+    let table = document.querySelector("table"); // تأكد أن الجدول الخاص بك داخل وسم table
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName("td")[0]; // يبحث في العمود الأول (اسم المستخدم)
+        if (td) {
+            let txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
 </script>
 
 </body>
