@@ -356,7 +356,10 @@ html {
 <body>
    <header class="main-header" style="background-color:#1E3A5F">
     <div class="logo">المكتبة المدرسية الرقمية 📚</div>
-
+<div class="visitor-badge" style="background: rgba(197, 160, 89, 0.1); border: 1px solid #c5a059; padding: 5px 15px; border-radius: 20px; color: #c5a059; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
+    <span>👁️</span>
+    <span>عدد زوار: <%= visitorCount %></span>
+</div>
     <div class="search-wrapper">
         <input type="text" id="searchInput" placeholder="ابحث عن اسم الكتاب..." onkeyup="searchBooks()">
     </div>

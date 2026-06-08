@@ -14,7 +14,7 @@ exports.getAllUsers = async (req, res) => {
 exports.addUser = async (req, res) => {
     try {
         const { username, password, role } = req.body;
-        console.log("Adding user:", username); // للتأكد أن البيانات تصل
+        // console.log("Adding user:", username); // للتأكد أن البيانات تصل
 
         // التأكد من أن قاعدة البيانات تعمل
         const existingUser = await db.query('SELECT id FROM users WHERE username = $1', [username]);

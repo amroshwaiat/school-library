@@ -213,20 +213,44 @@ const db = require('../config/db');
 const path = require('path');
 
 // 🌟 دالة مساعدة مطورة ومرنة لاستخراج غلاف الكتاب من أي شكل لرابط Google Drive
+// function extractGoogleDriveCover(pdfUrl, providedImageUrl) {
+//     // 1. إذا قام الأدمن بإدخال رابط صورة يدوي حقيقي، نعتمد عليه فوراً
+//     if (providedImageUrl && typeof providedImageUrl === 'string' && providedImageUrl.trim() !== '') {
+//         return providedImageUrl.trim();
+//     }
+
+//     try {
+//         if (pdfUrl && typeof pdfUrl === 'string' && pdfUrl.trim() !== '') {
+//             // التعبير النمطي المحدث ليلقط الـ ID حتى لو انتهى الرابط بـ /preview أو /view
+//             const matches = pdfUrl.match(/(?:https:\/\/drive\.google\.com\/(?:file\/d\/|open\?id=)|d\/)([a-zA-Z0-9_-]{25,45})/);
+            
+//             if (matches && matches[1]) {
+//                 const fileId = matches[1];
+//                 // توليد رابط المصغرة بجودة ممتازة
+//                 return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
+//             }
+//         }
+//     } catch (error) {
+//         console.error("خطأ أثناء استخراج غلاف Google Drive:", error);
+//     }
+
+//     // 2. إذا لم ينجح الاستخراج، نضع رابط صورة كتاب افتراضية عامة
+//     return 'https://cdn-icons-png.flaticon.com/512/330/330731.png';
+// }
 function extractGoogleDriveCover(pdfUrl, providedImageUrl) {
-    // 1. إذا قام الأدمن بإدخال رابط صورة يدوي حقيقي، نعتمد عليه فوراً
+    // 1. الأولوية الأولى: هل هناك رابط صورة يدوي؟ 
+    // إذا كان موجوداً وغير فارغ، نرجعه فوراً (لا ننظر للـ PDF)
     if (providedImageUrl && typeof providedImageUrl === 'string' && providedImageUrl.trim() !== '') {
         return providedImageUrl.trim();
     }
 
+    // 2. إذا وصلنا هنا، يعني أن حقل الصورة فارغ، نبدأ باستخراج الغلاف من الـ PDF
     try {
         if (pdfUrl && typeof pdfUrl === 'string' && pdfUrl.trim() !== '') {
-            // التعبير النمطي المحدث ليلقط الـ ID حتى لو انتهى الرابط بـ /preview أو /view
             const matches = pdfUrl.match(/(?:https:\/\/drive\.google\.com\/(?:file\/d\/|open\?id=)|d\/)([a-zA-Z0-9_-]{25,45})/);
             
             if (matches && matches[1]) {
                 const fileId = matches[1];
-                // توليد رابط المصغرة بجودة ممتازة
                 return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
             }
         }
@@ -234,7 +258,7 @@ function extractGoogleDriveCover(pdfUrl, providedImageUrl) {
         console.error("خطأ أثناء استخراج غلاف Google Drive:", error);
     }
 
-    // 2. إذا لم ينجح الاستخراج، نضع رابط صورة كتاب افتراضية عامة
+    // 3. إذا لم ينجح الاستخراج واليدوي فارغ، نضع رابط صورة افتراضية
     return 'https://cdn-icons-png.flaticon.com/512/330/330731.png';
 }
 

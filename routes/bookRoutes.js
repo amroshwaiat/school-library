@@ -5,15 +5,15 @@ const bookController = require('../controllers/bookController');
 // نقوم باستيراد الميدل وير بشكل مفصل للتأكد
 const auth = require('../middleware/authMiddleware');
 
-console.log("=== فحص الميدل وير في ملف المسارات ===");
-console.log("قيمة auth:", auth);
-console.log("قيمة auth.isAdmin:", auth.isAdmin);
-console.log("======================================");
+// console.log("=== فحص الميدل وير في ملف المسارات ===");
+// console.log("قيمة auth:", auth);
+// console.log("قيمة auth.isAdmin:", auth.isAdmin);
+// console.log("======================================");
 
-console.log("=== فحص Controller في المسارات ===");
-console.log("قيمة bookController:", bookController);
-console.log("هل getAdminPage دالة؟", typeof bookController.getAdminDashboard === 'function');
-console.log("==================================");
+// console.log("=== فحص Controller في المسارات ===");
+// console.log("قيمة bookController:", bookController);
+// console.log("هل getAdminPage دالة؟", typeof bookController.getAdminDashboard === 'function');
+// console.log("==================================");
 // استخدام auth.checkAuth، auth.isAdmin، auth.isTeacherOrAdmin
 // بدلاً من الاستيراد المفكك الذي قد يسبب undefined إذا كان الملف غير محدث
 

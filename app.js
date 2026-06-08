@@ -76,8 +76,25 @@
 require('dotenv').config(); // يجب أن يكون في السطر الأول دائماً
 const express = require('express');
 const session = require('express-session');
-const path = require('path');
 
+const path = require('path');
+const db = require('./config/db');
+const app = express();
+// Middleware لقراءة عدد الزوار وتمريره لجميع صفحات EJS
+app.use(async (req, res, next) => {
+    // نتجاهل الطلبات للملفات الثابتة لنسرع الموقع (CSS, JS, Images)
+    if (req.url.startsWith('/css') || req.url.startsWith('/js') || req.url.startsWith('/images')) {
+        return next();
+    }
+    
+    try {
+        const result = await db.query('SELECT views FROM site_stats WHERE id = 1');
+        res.locals.visitorCount = result.rows[0]?.views || 0;
+    } catch (err) {
+        res.locals.visitorCount = 0;
+    }
+    next();
+});
 const userController = require('./controllers/userController');
 const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
@@ -85,7 +102,7 @@ const authRoutes = require('./routes/authRoutes');
 const bookController = require('./controllers/bookController');
 const indexRoutes = require('./routes/indexRouter'); 
 
-const app = express();
+
 
 // 1. إعدادات قراءة البيانات والملفات العامة
 app.use(express.json()); 
@@ -122,7 +139,7 @@ app.use('/', indexRoutes);
 
 // 6. تشغيل السيرفر وقاعدة البيانات
 const PORT = process.env.PORT || 3000;
-const db = require('./config/db');
+
 const bcrypt = require('bcrypt');
 
 app.listen(PORT, () => {
