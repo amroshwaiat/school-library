@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام بيتك | المكتبة الرقمية</title>
+    <link rel="icon" type="image/png" href="/images/logo.jpeg">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="canonical" href="https://btec-school-library.com/policies" />
+    <style>
+        /* إعداد هيكل الصفحة الكامل */
+        html, body { height: 100%; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #4D8994; overflow: hidden; }
+        body { display: flex; flex-direction: column; }
+
+        header { background-color: #1E3A5F; display: flex; justify-content: center; align-items: center; padding: 10px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; }
+        header a { color: white; margin: 0 10px; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+        
+        /* جعل الـ main تأخذ كامل المساحة المتبقية */
+        main { flex: 1; display: flex; flex-direction: column; width: 100%; overflow: hidden; }
+
+        /* الحاوية تأخذ العرض والارتفاع الكامل بدون هوامش */
+        .pdf-container { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            background: white;
+            flex-grow: 1;
+        }
+
+        /* الإطار يأخذ كل المساحة المتاحة */
+        .pdf-viewer { width: 100%; height: 100%; border: none; flex-grow: 1; }
+
+        /* الأزرار في شريط علوي صغير */
+        .actions { padding: 8px; background: #1E3A5F; display: flex; justify-content: center; gap: 15px; flex-shrink: 0; }
+        .btn { padding: 6px 15px; background-color: #27ae60; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85rem; transition: 0.3s; }
+        .btn:hover { background-color: #219150; }
+        
+        /* إخفاء الفوتر في هذه الصفحة لإعطاء مساحة أكبر للقراءة */
+        footer { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/"> <h1 style="margin: 0; font-size: 1.2rem;">المكتبة الرقمية 📚</h1></a>
+        <nav>
+            <a href="/">الرئيسية</a> 
+            <a href="/about1">من نحن</a>
+            <a href="/btec">نظام بيتك</a>
+            <a href="/policies">سياسات بيرسون</a>
+            <a href="/team">فريق العمل</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="pdf-container">
+            <div class="actions">
+                <a href="/pdfs/btec.pdf" class="btn" target="_blank">فتح في نافذة جديدة ⤢</a>
+              
+            </div>
+            
+            <iframe src="/pdfs/btec.pdf" class="pdf-viewer">
+                هذا المتصفح لا يدعم عرض ملفات PDF.
+            </iframe>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J'].includes(e.key)) || (e.ctrlKey && ['u','s'].includes(e.key))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+    <footer>
+        <%- include('footer') %>
+    </footer>
+</body>
+</html>

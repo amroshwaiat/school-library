@@ -38,5 +38,11 @@ router.get('/about1', (req, res) => {
 router.get('/team', (req, res) => {
     res.render('team');
 });
+router.get('/btec', (req, res) => {
+    res.render('btec-system');
+});
+router.get('/policies', (req, res) => {
+    res.render('Pearson-policies');
+});
 
 module.exports = router;
