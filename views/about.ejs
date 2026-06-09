@@ -30,7 +30,7 @@
             align-items: center;
             padding: 20px; 
             color: white; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+          
         }
         
         header a { color: white; margin: 0 15px; font-weight: bold; text-decoration: none; transition: 0.3s; }
@@ -69,18 +69,9 @@
     </style>
 </head>
 <body>
-
-    <header>
-        <a href="/"> <h1 style="margin: 0; font-size: 1.5rem;">المكتبة المدرسية الرقمية 📚</h1></a>
-        <nav>
-            <a href="/">الرئيسية</a> 
-            <a href="/about1">من نحن</a>
-            <a href="/btec">تعريف بنظام بيتك</a>
-            <a href="/policies">سياسات بيرسون</a>
-            <a href="/team">فريق العمل</a>
-          
-        </nav>
-    </header>
+<header >
+        <%- include('header') %>
+</header>
 
     <main>
         <div class="about-container">
@@ -92,7 +83,7 @@
         </div>
     </main>
 
-    <footer>
+     <footer style="margin-top: 20px; padding-bottom: 20px">
         <%- include('footer') %>
     </footer>
 

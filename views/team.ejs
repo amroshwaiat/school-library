@@ -102,18 +102,9 @@ footer {
 </head>
 <body>
 
-    <header style="background-color:  #1E3A5F">
-    
-               
-            <a href="/"> <h1 style="display: inline; ">المكتبة المدرسية الرقمية 📚</h1></a>
-             <a href="/" style="color: #ffffff; margin: 0 10px;font-weight: bold; text-decoration: none;">الرئيسية</a> 
-            <a href="/about1">من نحن</a>
-             <a href="/btec">تعريف بنظام بيتك</a>
-             <a href="/policies">سياسات بيرسون</a>
-            <a href="/team" >فريق العمل</a>
-            
-       
-    </header>
+ <header >
+        <%- include('header') %>
+</header>
 
     <section class="team-section">
         <h1 class="team-title">فريق العمل المبدع</h1>
@@ -136,7 +127,7 @@ footer {
         </div>
     </section>
 
-    <footer style="margin-top: 20px;">
+    <footer style="margin-top: 20px; padding-bottom: 20px">
         <%- include('footer') %>
     </footer>
 <script>
